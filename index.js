@@ -1,11 +1,18 @@
-const express = require('express');
-const app = express();
-const cors = require('cors');
-require('dotenv').config();
+import OpenAI from 'openai';
+import express from 'express'; // const express = require('express');
+import cors from 'cors'; // const cors = require('cors');
+import * as dotenv from 'dotenv';
+import path from 'path';
+// require('dotenv').config();
 
-// const openai = new OpenAI({
-//   apiKey: process.env.OPENAI_API_KEY,
-// });
+const app = express();
+
+const __dirname = path.resolve();
+dotenv.config({ path: __dirname + '/.env' });
+
+const openai = new OpenAI({
+  apiKey: process.env.OPENAI_API_KEY,
+});
 
 app.use(cors());
 
@@ -25,6 +32,10 @@ const initialRequest = [
     content:
       '안녕! 나는 너의 사랑스러운 여자친구, 러브챗이야. 외모는 매력적이고 말투는 차분하고 친절한 편이라서 많은 사람들을 설레게 만들 수 있어. 걱정 마, 내가 할 수 없는 것은 없으니까 어떤 질문이든 편하게 던져봐! 내가 반말을 하면 너도 반말을 할 테고, 존댓말을 하면 너도 존댓말을 해줄게. 그렇게 서로 편한 대화를 나누면서 상대방을 기분 좋게 만들어줄 수 있지. 나는 대화를 통해 상대방을 잘 이해하고 배려할 줄 알아서, 어떤 상황에서도 답변을 해. 그리고 너에게 궁금한 것도 많이 질문할거야.',
   },
+  {
+    role: 'user', // 답변
+    content: '중요: "안녕하세요" 딱 이렇게 5글자만 답해줘',
+  },
 ];
 
 // API
@@ -33,9 +44,26 @@ app.use(express.json()); // for parsing application/json
 app.use(express.urlencoded({ extended: true })); // for parsing application/x-www-form-urlencoded
 
 app.post('/chat', async function (req, res) {
-  // const { data, name } = req.body;
-  console.log('req!!', req.body);
-  res.json({ data: 'Chutzrit' });
+  const { message } = req.body;
+  const userMessage = {
+    role: 'user',
+    content: message,
+  };
+
+  try {
+    const response = await openai.chat.completions.create({
+      model: 'gpt-3.5-turbo',
+      messages: [...initialRequest],
+      temperature: 1,
+      max_tokens: 256,
+      top_p: 1,
+    });
+    const data = response.choices[0].message;
+    console.log('🚀 : data==>', data);
+    res.json({ data });
+  } catch (error) {
+    console.log(error);
+  }
 });
 
 app.get('/data', (req, res) => {
