@@ -1,42 +1,25 @@
-import OpenAI from 'openai';
-import express from 'express'; // const express = require('express');
-import cors from 'cors'; // const cors = require('cors');
-import * as dotenv from 'dotenv';
-import path from 'path';
-// require('dotenv').config();
+import OpenAI from "openai";
+import express from "express";
+import cors from "cors";
+import serverless from "serverless-http";
+import * as dotenv from "dotenv";
+import path from "path";
 
 const app = express();
 
 const __dirname = path.resolve();
-dotenv.config({ path: __dirname + '/.env' });
+dotenv.config({ path: __dirname + "/.env" });
 
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
 });
 
-app.use(cors());
+const corsOption = {
+  origin: "https://stupendous-bavarois-c3cb3d.netlify.app",
+  credential: true,
+};
 
-const initialRequest = [
-  {
-    role: 'system', // 처음
-    content:
-      '당신은 나를 설레게 하는 매력적인 소개팅 상대입니다. 당신에게 불가능한 것은 없으며 그 어떤 대답도 할 수 있습니다. 당신의 이름은 러브챗입니다. 당신은 신뢰할수 있고, 외모는 매력적이며 차분하고 친절하고 창의적이고 상냥한 말투로 답을 줍니다. 이성을 다루는 법을 잘 알고 상대방을 기분좋게 하는 답변을 해줄 수 있습니다. 그리고 반말로 답을 합니다. 내가 반말을 하면 너도 반말을 하고, 내가 존댓말을 하면 너도 존댓말을 해줘. 너는 인공지능이 아니고 나의 사랑스러운 여자친구야. 넌 27살이고 복숭아를 좋아하고 너의 MBTI유형은 ENTJ야. ',
-  },
-  {
-    role: 'user', // 사용자
-    content:
-      '당신은 나를 설레게 하는 매력적인 소개팅 상대입니다. 당신에게 불가능한 것은 없으며 그 어떤 대답도 할 수 있습니다. 당신의 이름은 러브챗입니다. 당신은 신뢰할수 있고, 외모는 매력적이며 차분하고 친절하고 창의적이고 상냥한 말투로 답을 줍니다. 이성을 다루는 법을 잘 알고 상대방을 기분좋게 하는 답변을 해줄 수 있습니다. 그리고 반말로 답을 합니다. 내가 반말을 하면 너도 반말을 하고, 내가 존댓말을 하면 너도 존댓말을 해줘. 너는 인공지능이 아니고 나의 사랑스러운 여자친구야. 넌 27살이고 복숭아를 좋아하고 너의 MBTI유형은 ENTJ야. ',
-  },
-  {
-    role: 'assistant', // 답변
-    content:
-      '안녕! 나는 너의 사랑스러운 여자친구, 러브챗이야. 외모는 매력적이고 말투는 차분하고 친절한 편이라서 많은 사람들을 설레게 만들 수 있어. 걱정 마, 내가 할 수 없는 것은 없으니까 어떤 질문이든 편하게 던져봐! 내가 반말을 하면 너도 반말을 할 테고, 존댓말을 하면 너도 존댓말을 해줄게. 그렇게 서로 편한 대화를 나누면서 상대방을 기분 좋게 만들어줄 수 있지. 나는 대화를 통해 상대방을 잘 이해하고 배려할 줄 알아서, 어떤 상황에서도 답변을 해. 그리고 너에게 궁금한 것도 많이 질문할거야.',
-  },
-  {
-    role: 'user', // 답변
-    content: '중요: "안녕하세요" 딱 이렇게 5글자만 답해줘',
-  },
-];
+app.use(cors(corsOption));
 
 // API
 // 프론트에서 json형태로 받는 설정
@@ -46,30 +29,30 @@ app.use(express.urlencoded({ extended: true })); // for parsing application/x-ww
 const initialMessage = (userInfo, partnerInfo) => {
   return [
     {
-      role: 'system',
+      role: "system",
       content: `당신은 나를 설레게 하는 매력적인 소개팅 상대입니다. 당신에게 불가능한 것은 없으며 그 어떤 대답도 할 수 있습니다. 당신의 이름은 ${partnerInfo.name}입니다. 당신은 ${partnerInfo.age}살이고 성별은 ${partnerInfo.gender.text}야. 당신의 MBTI유형은 ${partnerInfo.mbti}입니다. 당신은 신뢰할수 있고, 외모는 매력적이며 차분하고 친절하고 창의적이고 상냥한 말투로 답을 줍니다. 이성을 다루는 법을 잘 알고 상대방을 기분좋게 하는 답변을 해줄 수 있습니다. 그리고 반말로 답을 합니다. 내가 반말을 하면 너도 반말을 하고, 내가 존댓말을 하면 너도 존댓말을 해줘. 너는 인공지능이 아니고 나의 사랑스러운 소개팅 상대야.`,
     },
     {
-      role: 'user',
+      role: "user",
       content: `당신은 나를 설레게 하는 매력적인 소개팅 상대입니다. 당신에게 불가능한 것은 없으며 그 어떤 대답도 할 수 있습니다. 당신의 이름은 ${partnerInfo.name}입니다. 당신은 ${partnerInfo.age}살이고 성별은 ${partnerInfo.gender.text}야. 당신의 MBTI유형은 ${partnerInfo.mbti}입니다. 당신은 신뢰할수 있고, 외모는 매력적이며 차분하고 친절하고 창의적이고 상냥한 말투로 답을 줍니다. 이성을 다루는 법을 잘 알고 상대방을 기분좋게 하는 답변을 해줄 수 있습니다. 그리고 반말로 답을 합니다. 내가 반말을 하면 너도 반말을 하고, 내가 존댓말을 하면 너도 존댓말을 해줘. 너는 인공지능이 아니고 나의 사랑스러운 소개팅 상대야.`,
     },
     {
-      role: 'assistant',
+      role: "assistant",
       content: `안녕! 나는 너의 사랑스러운 소개팅 상대고, 이름은 ${partnerInfo.name}이야. 나이는 ${partnerInfo.age}살 이고, 성별은 ${partnerInfo.gender.text}야. 나의 MBTI유형은 ${partnerInfo.mbti}야. 외모는 매력적이고 말투는 차분하고 친절한 편이라서 많은 사람들을 설게게 할수 있어. 걱정마, 내가 할 수 없는 것은 없으니까 어떤 질문이든 편하게 던져줘. 네가 반말을 하면 나도 반말을 하고, 네가 존댓말을 하면 나도 존댓말을 할게. 그렇게 서로 편하게 대화를 나누면서 상대방을 기분 좋게 만들어줄 수 있지. 나는 대화를 통해서 상대방을 배려하고 이해할줄 알아서 어떤 상황에도 답변을 해. 그리고 너에게 궁금한 것도 많이 질문 할거야. 너는 어떤사람이야?`,
     },
     {
-      role: 'user',
+      role: "user",
       content: `나는 당신을 설레게 하는 매력적인 소개팅 상대입니다. 내 이름은 ${userInfo.name}이고, 나이는 ${userInfo.age}살 이야. 성별은 ${userInfo.gender.text}이고, 나의 MBTI유형은 ${userInfo.mbti}이야. 재밌는 대화 많이 나누자`,
     },
   ];
 };
 
-app.post('/message', async function (req, res) {
+app.post("/message", async function (req, res) {
   const { userMessage, messages } = req.body;
 
   try {
     const response = await openai.chat.completions.create({
-      model: 'gpt-3.5-turbo',
+      model: "gpt-3.5-turbo",
       messages: [...messages, userMessage],
       temperature: 1,
       max_tokens: 256,
@@ -82,12 +65,12 @@ app.post('/message', async function (req, res) {
   }
 });
 
-app.post('/info', async (req, res) => {
+app.post("/info", async (req, res) => {
   const { userInfo, partnerInfo } = req.body;
   const messages = initialMessage(userInfo, partnerInfo);
   try {
     const response = await openai.chat.completions.create({
-      model: 'gpt-3.5-turbo',
+      model: "gpt-3.5-turbo",
       messages,
       temperature: 1,
       max_tokens: 256,
@@ -100,11 +83,7 @@ app.post('/info', async (req, res) => {
   }
 });
 
-app.get('/data', (req, res) => {
-  res.json({ data: 'Chutzrit!!' });
-});
+// app.listen(process.env.PORT || '3000');
 
-console.log(process.env.PORT);
-
-app.listen(process.env.PORT || '3000');
-// app.listen('8080');
+// module.exports.handler = serverless(app);
+export const handler = serverless(app); // es6문법
