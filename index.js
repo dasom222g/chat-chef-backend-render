@@ -17,7 +17,7 @@ const openai = new OpenAI({
 });
 
 const corsOption = {
-  origin: "https://stupendous-bavarois-c3cb3d.netlify.app",
+  origin: "https://chat-date.netlify.app",
   credential: true,
 };
 
