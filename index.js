@@ -5,6 +5,8 @@ import serverless from "serverless-http";
 import * as dotenv from "dotenv";
 import path from "path";
 
+console.log("Hello world");
+
 const app = express();
 
 const __dirname = path.resolve();
