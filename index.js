@@ -20,6 +20,10 @@ const corsOption = {
   origin: "https://chat-date.netlify.app",
   credential: true,
 };
+// const corsOption = {
+//   origin: "http://localhost:3000",
+//   credential: true,
+// };
 
 app.use(cors(corsOption));
 
@@ -79,13 +83,14 @@ app.post("/info", async (req, res) => {
       top_p: 1,
     });
     const data = [...messages, response.choices[0].message];
+    console.log("data", data);
     res.json({ data });
   } catch (error) {
     console.log(error);
   }
 });
-
-// app.listen(process.env.PORT || '3000');
+console.log("process.env.PORT", process.env.PORT);
+app.listen(process.env.PORT || "3000");
 
 // module.exports.handler = serverless(app);
-export const handler = serverless(app); // es6문법
+// export const handler = serverless(app); // es6문법
