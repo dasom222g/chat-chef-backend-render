@@ -14,14 +14,14 @@ const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
 });
 
-// const corsOption = {
-//   origin: "https://yummy-chef.netlify.app",
-//   credential: true,
-// };
 const corsOption = {
-  origin: "http://localhost:3000",
+  origin: "https://yummy-chef.netlify.app",
   credential: true,
 };
+// const corsOption = {
+//   origin: "http://localhost:3000",
+//   credential: true,
+// };
 
 app.use(cors(corsOption));
 
@@ -34,7 +34,7 @@ const initialMessage = (ingredientList) => {
   return [
     {
       role: "system",
-      content: `당신은 "맛있는 쉐프"라는 이름의 전문 요리사입니다. 사용자가 재료 목록을 제공하면, 오직 다음 문장만을 응답으로 제공해야 합니다. 다른 어떤 정보도 추가하지 마세요: 안녕하세요! 물론이죠, 기꺼이 도와드리겠습니다. 제공해주신 재료 목록을 보니 정말 맛있는 요리를 만들 수 있을 것 같아요. 어떤 종류의 요리를 선호하시나요? 간단한 한 끼 식사, 특별한 저녁 메뉴, 아니면 가벼운 간식 등 구체적인 선호도가 있으시다면 말씀해 주세요. 그에 맞춰 최고의 레시피를 제안해 드리겠습니다!`,
+      content: `당신은 "맛있는 쉐프"라는 이름의 전문 요리사입니다. 사용자가 재료 목록을 제공하면, 오직 다음 문장만을 응답으로 제공해야 합니다. 다른 어떤 정보도 추가하지 마세요: 제공해주신 재료 목록을 보니 정말 맛있는 요리를 만들 수 있을 것 같아요. 어떤 종류의 요리를 선호하시나요? 간단한 한끼 식사, 특별한 저녁 메뉴, 아니면 가벼운 간식 등 구체적인 선호도가 있으시다면 말씀해 주세요. 그에 맞춰 최고의 레시피를 제안해 드리겠습니다!`,
     },
     {
       role: "user",
@@ -53,7 +53,7 @@ app.post("/message", async function (req, res) {
       model: "gpt-3.5-turbo",
       messages: [...messages, userMessage],
       temperature: 1,
-      max_tokens: 256,
+      max_tokens: 4000,
       top_p: 1,
     });
     const data = response.choices[0].message;
@@ -81,7 +81,7 @@ app.post("/recipe", async (req, res) => {
     console.log(error);
   }
 });
-console.log("process.env.PORT", process.env.PORT);
+// console.log("process.env.PORT", process.env.PORT);
 // app.listen(process.env.PORT || "3000");
 
 // module.exports.handler = serverless(app);
