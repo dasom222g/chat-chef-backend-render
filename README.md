@@ -1,2 +1,3 @@
-# chat-date-backend
-1 second before blind date with chat gpt API, node.js, express
+# chat-chef-backend
+
+yummy chef with chat gpt API, node.js, express

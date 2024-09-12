@@ -5,8 +5,6 @@ import serverless from "serverless-http";
 import * as dotenv from "dotenv";
 import path from "path";
 
-console.log("Hello world");
-
 const app = express();
 
 const __dirname = path.resolve();
@@ -16,14 +14,14 @@ const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
 });
 
-const corsOption = {
-  origin: "https://chat-date.netlify.app",
-  credential: true,
-};
 // const corsOption = {
-//   origin: "http://localhost:3000",
+//   origin: "https://yummy-chef.netlify.app",
 //   credential: true,
 // };
+const corsOption = {
+  origin: "http://localhost:3000",
+  credential: true,
+};
 
 app.use(cors(corsOption));
 
@@ -84,7 +82,7 @@ app.post("/recipe", async (req, res) => {
   }
 });
 console.log("process.env.PORT", process.env.PORT);
-app.listen(process.env.PORT || "3000");
+// app.listen(process.env.PORT || "3000");
 
 // module.exports.handler = serverless(app);
 export const handler = serverless(app); // es6문법
