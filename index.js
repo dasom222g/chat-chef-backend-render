@@ -21,6 +21,11 @@ const corsOption = {
 app.use(cors(corsOption));
 // app.use(cors());
 
+// Health Check
+app.get("/", (req, res) => {
+  res.send("Server is running!");
+});
+
 // API
 // 프론트에서 json형태로 받는 설정
 app.use(express.json()); // for parsing application/json
