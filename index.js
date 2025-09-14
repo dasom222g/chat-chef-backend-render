@@ -1,7 +1,6 @@
 import OpenAI from "openai";
 import express from "express";
 import cors from "cors";
-import serverless from "serverless-http";
 import * as dotenv from "dotenv";
 import path from "path";
 
@@ -16,14 +15,11 @@ const openai = new OpenAI({
 
 const corsOption = {
   origin: "https://yummy-chef.netlify.app",
-  credential: true,
+  credentials: true,
 };
-// const corsOption = {
-//   origin: "http://localhost:3000",
-//   credential: true,
-// };
 
 app.use(cors(corsOption));
+// app.use(cors());
 
 // API
 // 프론트에서 json형태로 받는 설정
@@ -81,8 +77,6 @@ app.post("/recipe", async (req, res) => {
     console.log(error);
   }
 });
-// console.log("process.env.PORT", process.env.PORT);
-// app.listen(process.env.PORT || "3000");
 
-// module.exports.handler = serverless(app);
-export const handler = serverless(app); // es6문법
+console.log("process.env.PORT", process.env.PORT);
+app.listen(process.env.PORT || 3000);
